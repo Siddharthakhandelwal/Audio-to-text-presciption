@@ -48,8 +48,7 @@ def prescription():
     - Lifestyle or dietary recommendations (if any)
     - Follow-up instructions
 
-    The tone should be professional and direct — as if the doctor is writing it, not an AI. Do not refer to the conversation or yourself in the third person. Just write the prescription naturally, as a doctor would hand it to the patient.
-
+    The tone should be professional and direct — as if the doctor is writing it, not an AI.Don't make or add any recommendations on your own, stick to the conversations only. Do not refer to the conversation or yourself in the third person. Just write the prescription naturally, as a doctor would hand it to the patient.
     Conversation:
     {text}
     '''
