@@ -1,34 +1,62 @@
+import os
+from dotenv import load_dotenv
+from datetime import datetime
 import speech_recognition as sr
 from google import generativeai as genai
-from dotenv import load_dotenv
-import os
-from datetime import datetime
+import sounddevice as sd
+import numpy as np
+from scipy.io.wavfile import write
 
 load_dotenv()
 now=datetime.now()
 formatted = now.strftime("%Y-%m-%d %H:%M:%S")
-def audio_text():
-    r = sr.Recognizer()
-    with sr.Microphone(sample_rate=44100, chunk_size=2048) as source:
-        print("Say something...")
-        r.adjust_for_ambient_noise(source, duration=0.5)
-        audio = r.listen(source, timeout=10, phrase_time_limit=180)
 
+def transcribe_audio(filename):
+    recognizer = sr.Recognizer()
+    with sr.AudioFile(filename) as source:
+        audio = recognizer.record(source)
     try:
-        text = r.recognize_google(audio, language='en-IN')
-        print("You said:", text)
+        text = recognizer.recognize_google(audio)
+        print(f"You said: {text}")
         return text
     except sr.UnknownValueError:
-        return "Could not understand audio."
-    except sr.RequestError as e:
-        return f"Google API error: {e}"
+        print("Sorry, could not understand the audio.")
+        return "Sorry, could not understand the audio."
+    except sr.RequestError:
+        print("Could not request results from Google Speech Recognition service.")
+        return "Sorry, could not understand the audio."
+
+
+
+def manual_record_audio(filename='user_input.wav', fs=22050):
+    print("Press Enter to start recording...")
+    input()
+    print("Recording... Press Enter to stop.")
+
+    recording = []
+
+    def callback(indata, frames, time, status):
+        if status:
+            print(status)
+        recording.append(indata.copy())
+
+    # Start the stream and record until Enter is pressed again
+    with sd.InputStream(samplerate=fs, channels=1, callback=callback):
+        input()  # Wait for Enter to stop
+        # After Enter is pressed, the stream context will exit
+
+    audio = np.concatenate(recording, axis=0)
+    audio_int16 = np.int16(audio * 32767)
+    write(filename, fs, audio_int16)
+    print("Recording saved.")
+    return filename
 
 def prescription():
-    text = audio_text()
+    text = transcribe_audio("user_input.wav")
     print("Transcribed:", text)
 
     # Error handling
-    if "Google API error" in text or "Could not understand audio." in text:
+    if "Google API error" in text or "Could not understand audio." in text or "Sorry, could not understand the audio." in text:
         return "Sorry Doc, I can't help you today."
 
     # Configure Gemini
@@ -57,5 +85,12 @@ def prescription():
     print("\nPrescription:\n", response.text)
     return response.text
 
-# Run it
-prescription()
+def main():
+    load_dotenv()
+    if not os.path.exists("user_input.wav"):
+        manual_record_audio()
+    prescription()
+
+if __name__ == "__main__":
+    main()
+
