@@ -26,8 +26,6 @@ def transcribe_audio(filename):
         print("Could not request results from Google Speech Recognition service.")
         return "Sorry, could not understand the audio."
 
-
-
 def manual_record_audio(filename='user_input.wav', fs=22050):
     print("Press Enter to start recording...")
     input()
