@@ -6,25 +6,54 @@ from google import generativeai as genai
 import sounddevice as sd
 import numpy as np
 from scipy.io.wavfile import write
+import requests
 
 load_dotenv()
 now=datetime.now()
 formatted = now.strftime("%Y-%m-%d %H:%M:%S")
 
+base_url = "https://api.assemblyai.com"
+headers = {
+    "authorization": "eb4d1dd9aa884e91b70bc8bf9f583f1c"  # Replace with your actual API key
+}
+
 def transcribe_audio(filename):
-    recognizer = sr.Recognizer()
-    with sr.AudioFile(filename) as source:
-        audio = recognizer.record(source)
-    try:
-        text = recognizer.recognize_google(audio)
-        print(f"You said: {text}")
-        return text
-    except sr.UnknownValueError:
-        print("Sorry, could not understand the audio.")
-        return "Sorry, could not understand the audio."
-    except sr.RequestError:
-        print("Could not request results from Google Speech Recognition service.")
-        return "Sorry, could not understand the audio."
+    with open(filename, "rb") as f:
+        upload_response = requests.post(
+            base_url + "/v2/upload",
+            headers=headers,
+            data=f
+        )
+
+    audio_url = upload_response.json()["upload_url"]
+    print(f"Uploaded audio URL: {audio_url}")
+
+    # 2. Submit transcription request with language auto-detection
+    data = {
+        "audio_url": audio_url,
+        "language_detection": True  # This enables language detection
+        # "speech_model": "universal"  # Optional, helps with multilingual transcription
+    }
+
+    transcript_response = requests.post(base_url + "/v2/transcript", json=data, headers=headers)
+    transcript_id = transcript_response.json()["id"]
+    polling_endpoint = f"{base_url}/v2/transcript/{transcript_id}"
+
+    # 3. Poll until transcription is complete
+    while True:
+        result = requests.get(polling_endpoint, headers=headers).json()
+
+        if result['status'] == 'completed':
+            print("\nTranscription completed:")
+            print(result['text'])
+            os.remove("user_input.wav")
+            return result['text']
+
+        elif result['status'] == 'error':
+            raise RuntimeError(f"Transcription failed: {result['error']}")
+
+        else:
+            print("Transcription in progress... Waiting 3 seconds.")
 
 def manual_record_audio(filename='user_input.wav', fs=22050):
     print("Press Enter to start recording...")
@@ -74,13 +103,14 @@ def prescription():
     - Lifestyle or dietary recommendations (if any)
     - Follow-up instructions
 
-    The tone should be professional and direct — as if the doctor is writing it, not an AI.Don't make or add any recommendations on your own, stick to the conversations only. Do not refer to the conversation or yourself in the third person. Just write the prescription naturally, as a doctor would hand it to the patient.
+    The tone should be professional and direct — as if the doctor is writing it, not an AI.Don't make or add any recommendations on your own, stick to the conversations only. Do not refer to the conversation or yourself in the third person. Just write the prescription naturally, as a doctor would hand it to the patient.Conversation can be in any language , translate it to english and write the prescriptio as i described you.
     Conversation:
     {text}
     '''
 
     response = model.generate_content(prompt)
     print("\nPrescription:\n", response.text)
+    
     return response.text
 
 def main():
