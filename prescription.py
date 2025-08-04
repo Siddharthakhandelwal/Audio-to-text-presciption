@@ -96,6 +96,7 @@ You are a licensed medical doctor. Below is a transcribed or recorded conversati
 Based solely on this conversation, write a medically accurate, professional prescription in the format typically used by doctors. The prescription should be detailed and clinical, and it should be written naturally as a doctor would write it directly for the patient (not referring to yourself as an AI or the conversation as a transcript).
 
 Your prescription must include only the information mentioned or clearly implied in the conversation. Do not add any assumptions or medical recommendations not supported by the dialogue.
+while listing the details , ensure to include the visit the time with name and other details of the patient.
 
 The prescription should cover the following:
 
