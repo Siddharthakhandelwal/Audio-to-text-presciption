@@ -107,13 +107,17 @@ Diagnosis (provisional or confirmed)
 
 Medications prescribed
 
-Include name, dosage, route (if specified), frequency, and duration
+Include correct medicine name (check and correct any unclear or incorrect names), potency, route (if specified), dosage, frequency, and duration
 
 Recommended laboratory or imaging investigations (if any)
 
 Lifestyle, dietary, or activity modifications (if advised)
 
 Clear follow-up or referral instructions (if given)
+
+If any medication name is not recognized clearly from the conversation, verify and correct the name, and include the appropriate strength/potency based on common clinical usage.
+
+If the patient mentions durations such as "4 to 5 days," ensure this is not misinterpreted as "45 days." Interpret such statements carefully and accurately.
 
 If the conversation is in any language other than English, translate the content accurately and provide the final prescription in English.
 
