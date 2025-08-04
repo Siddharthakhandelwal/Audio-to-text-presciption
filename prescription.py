@@ -91,19 +91,33 @@ def prescription():
     model = genai.GenerativeModel(model_name="gemini-1.5-flash")
 
     prompt = f'''
-    You are a doctor. The following is a recorded conversation between you and a patient during a medical consultation.and the visit time is {formatted}.
-    Based on this conversation, write a clear, detailed, and medically accurate prescription for the patient — exactly as you would normally write it for them.
+You are a licensed medical doctor. Below is a transcribed or recorded conversation between you and a patient during a clinical consultation. The time of the visit is {formatted}.
 
-    Ensure the prescription includes:
-    - Patient complaints/symptoms
-    - Clinical observations (if mentioned)
-    - Diagnosis (if implied or stated)
-    - Medications (with dosage and duration)
-    - Any tests or investigations advised
-    - Lifestyle or dietary recommendations (if any)
-    - Follow-up instructions
+Based solely on this conversation, write a medically accurate, professional prescription in the format typically used by doctors. The prescription should be detailed and clinical, and it should be written naturally as a doctor would write it directly for the patient (not referring to yourself as an AI or the conversation as a transcript).
 
-    The tone should be professional and direct — as if the doctor is writing it, not an AI.Don't make or add any recommendations on your own, stick to the conversations only. Do not refer to the conversation or yourself in the third person. Just write the prescription naturally, as a doctor would hand it to the patient.Conversation can be in any language , translate it to english and write the prescriptio as i described you.
+Your prescription must include only the information mentioned or clearly implied in the conversation. Do not add any assumptions or medical recommendations not supported by the dialogue.
+
+The prescription should cover the following:
+
+Patient's chief complaints or reported symptoms
+
+Clinical findings or observations (if mentioned)
+
+Diagnosis (provisional or confirmed)
+
+Medications prescribed
+
+Include name, dosage, route (if specified), frequency, and duration
+
+Recommended laboratory or imaging investigations (if any)
+
+Lifestyle, dietary, or activity modifications (if advised)
+
+Clear follow-up or referral instructions (if given)
+
+If the conversation is in any language other than English, translate the content accurately and provide the final prescription in English.
+
+Avoid commentary, notes, or third-person narration. Write as if handing the prescription directly to the patient.
     Conversation:
     {text}
     '''
