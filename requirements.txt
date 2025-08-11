@@ -1,6 +1,0 @@
-speechrecognition
-google-generativeai
-python-dotenv
-sounddevice
-numpy
-scipy
